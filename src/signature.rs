@@ -190,8 +190,8 @@ impl PartialEq for Signature {
 
 impl Eq for Signature {}
 
-impl PartialOrd for Signature {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+impl Ord for Signature {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
             (Signature::Unit, Signature::Unit)
             | (Signature::U8, Signature::U8)
@@ -207,8 +207,9 @@ impl PartialOrd for Signature {
             | (Signature::Signature, Signature::Signature)
             | (Signature::ObjectPath, Signature::ObjectPath)
             | (Signature::Value, Signature::Value)
-            | (Signature::Fd, Signature::Fd) => Some(std::cmp::Ordering::Equal),
-            (Signature::Array(a), Signature::Array(b)) => a.partial_cmp(b),
+            | (Signature::Fd, Signature::Fd) => std::cmp::Ordering::Equal,
+            
+            (Signature::Array(a), Signature::Array(b)) => a.cmp(b),
             (
                 Signature::Dict {
                     key: key_a,
@@ -218,21 +219,22 @@ impl PartialOrd for Signature {
                     key: key_b,
                     value: value_b,
                 },
-            ) => match key_a.partial_cmp(key_b) {
-                Some(std::cmp::Ordering::Equal) => value_a.partial_cmp(value_b),
+            ) => match key_a.cmp(key_b) {
+                std::cmp::Ordering::Equal => value_a.cmp(value_b),
                 other => other,
             },
-            (Signature::Structure(a), Signature::Structure(b)) => a.iter().partial_cmp(b.iter()),
+            (Signature::Structure(a), Signature::Structure(b)) => a.iter().cmp(b.iter()),
+
             #[cfg(feature = "gvariant")]
-            (Signature::Maybe(a), Signature::Maybe(b)) => a.partial_cmp(b),
-            (a, b) => None,
+            (Signature::Maybe(a), Signature::Maybe(b)) => a.cmp(b),
+            (a, b) => a.cmp(b),
         }
     }
 }
 
-impl Ord for Signature {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.partial_cmp(other).unwrap()
+impl PartialOrd for Signature {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
