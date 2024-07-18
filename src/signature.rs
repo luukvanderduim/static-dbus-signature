@@ -4,6 +4,7 @@ use std::ops::Deref;
 use std::str::FromStr;
 use std::sync::Arc;
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, Clone)]
 pub enum Signature {
     // Basic types
