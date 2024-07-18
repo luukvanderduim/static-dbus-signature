@@ -260,7 +260,7 @@ impl FieldsSignatures {
 
             fn next(&mut self) -> Option<Self::Item> {
                 match self {
-                    Fields::Static(iter) => iter.next().map(|&f| f),
+                    Fields::Static(iter) => iter.next().copied(),
                     Fields::Dynamic(iter) => iter.next(),
                 }
             }
